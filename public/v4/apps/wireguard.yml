@@ -1,0 +1,65 @@
+captainVersion: 4
+services:
+    $$cap_appname:
+        image: ghcr.io/linuxserver/wireguard
+        cap_add: # Not supported yet
+            - NET_ADMIN
+            - SYS_MODULE
+        environment:
+            PGID: $$cap_pgid
+            PUID: $$cap_puid
+            TZ: $$cap_tz
+            SERVERURL: $$cap_appname.$$cap_root_domain
+            SERVERPORT: 51820
+            PEERS: $$cap_peers
+            PEERDNS: $$cap_peer_dns
+            INTERNAL_SUBNET: 10.13.13.0
+            ALLOWEDIPS: 0.0.0.0/0
+        volumes:
+            - $$cap_appname-config:/config
+            - /lib/modules:/lib/modules
+        ports:
+            - 51820:51820
+        sysctls: # Not supported yet
+            - net.ipv4.conf.all.src_valid_mark=1
+        restart: unless-stopped
+caproverOneClickApp:
+    variables:
+        - id: '$$cap_puid'
+          label: WireGuard UserID
+          defaultValue: 1000
+          description: UserID used by WireGuard to avoid permission problems, please refer to docs- https://github.com/linuxserver/docker-wireguard#Parameters
+          validRegex: /[0-9]/
+        - id: '$$cap_pgid'
+          label: WireGuard GroupID
+          defaultValue: 1000
+          description: GroupID used by WireGuard to avoid permission problems, please refer to docs- https://github.com/linuxserver/docker-wireguard#Parameters
+          validRegex: /[0-9]/
+        - id: '$$cap_tz'
+          label: Time Zone
+          defaultValue: Asia/Kolkata
+          description: Get yours from https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+          validRegex: /.{1,}/
+        - id: '$$cap_peers'
+          label: Number of peers
+          defaultValue: 1
+          description: Number of peers to create confs for.
+          validRegex: /[0-9]/
+        - id: '$$cap_peer_dns'
+          label: Peer DNS
+          defaultValue: auto
+          description: DNS server set in peer/client configs. can be set as 'auto' or '8.8.8.8' or '1.1.1.1'
+          validRegex: /.{1,}/
+    instructions:
+        start: |-
+            WireGuard® is an extremely simple yet fast and modern VPN that utilizes state-of-the-art cryptography.
+            It aims to be faster, simpler, leaner, and more useful than IPsec, while avoiding the massive headache.
+
+            For more details visit- https://github.com/linuxserver/docker-wireguard
+        end: |-
+            WireGuard® has been successfully deployed! Please wait atleast 2-4 mins before trying to connect.
+    displayName: WireGuard
+    isOfficial: false
+    description: Simple yet fast and modern VPN
+    documentation: See https://github.com/linuxserver/docker-wireguard
+
